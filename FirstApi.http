@@ -1,0 +1,39 @@
+@BookStore_HostAddress = http://localhost:5291
+
+GET {{BookStore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+GET {{BookStore_HostAddress}}/api/books
+Accept: application/json
+
+###
+GET {{BookStore_HostAddress}}/api/books/11
+Accept: application/json
+
+
+###
+POST {{BookStore_HostAddress}}/api/books
+Content-Type: application/json
+Accept: application/json
+
+{
+    "id": 11,
+    "title": "C# unlocked",
+    "author": "Alen",
+    "yearPublished": 2025
+}
+
+###
+PUT {{BookStore_HostAddress}}/api/books/11
+Content-Type: application/json
+
+{
+    "id": 11,
+    "title": "C# unlocked",
+    "author": "Alen",
+    "yearPublished": 2025
+}
+
+###
+DELETE {{BookStore_HostAddress}}/api/books/11
