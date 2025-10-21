@@ -1,5 +1,4 @@
 using AutoMapper;
-using BookStore.Models;
 using BookStore.DTOs;
 
 namespace BookStore.Profiles;
