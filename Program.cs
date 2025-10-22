@@ -1,5 +1,6 @@
 global using BookStore.Models;
 global using BookStore.Services;
+global using BookStore.Profiles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -20,8 +21,9 @@ builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddDbContext<BookStoreContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreCollection"))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection"))
 );
+builder.Services.AddScoped<IBookService, BookService>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);

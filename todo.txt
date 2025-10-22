@@ -1,0 +1,4 @@
+Implement global exception handling middleware (e.g., UseExceptionHandler).
+Add caching for GetBooksAsync() via IMemoryCache or Redis.
+Add authorization (e.g., [Authorize(Roles = "Admin")] on POST/PUT/DELETE).
+Add pagination support for large datasets.
