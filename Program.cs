@@ -20,10 +20,7 @@ builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddDbContext<BookStoreContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("BookStoreCollection"),
-        new MySqlServerVersion(new Version(8, 0, 36))
-    )
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreCollection"))
 );
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
