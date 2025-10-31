@@ -21,10 +21,16 @@ builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddDbContext<BookStoreContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BookStoreConnection"))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlDbConnection"))
 );
-builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddStackExchangeRedisCache(option =>
+{
+    option.Configuration = builder.Configuration.GetConnectionString("Redis");
+    option.InstanceName = "Books_";
+});
 
+builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 builder.Services.AddAuthorization();
 
