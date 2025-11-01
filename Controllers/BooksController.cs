@@ -11,19 +11,30 @@ namespace MyApp.Namespace
     [ApiController]
     public class BooksController : ControllerBase
     {
-        public readonly BookStoreContext _context;
-        public readonly IMapper _mapper;
+        private readonly BookStoreContext _context;
+        private readonly IMapper _mapper;
 
-        public BooksController(BookStoreContext context, IMapper mapper)
+        private readonly IRedisCacheService _cache;
+
+        public BooksController(BookStoreContext context, IMapper mapper, IRedisCacheService cache)
         {
             _context = context;
             _mapper = mapper;
+            _cache = cache;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Book>>> GetBooks()
         {
-            var books = await _context.Books.AsNoTracking().ToListAsync();
+            var userId = Request.Headers["UserId"];
+
+            var cacheKey = $"books_{userId}";
+            var books = _cache.GetData<IEnumerable<Book>>(cacheKey);
+            if(books is null)
+            {
+                books = await _context.Books.AsNoTracking().ToListAsync();
+                _cache.SetData("books", books);
+            }
             var result = _mapper.Map<IEnumerable<BookReadDto>>(books);
             return Ok(result);
         }
@@ -31,7 +42,16 @@ namespace MyApp.Namespace
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Book>> GetBookById(int id)
         {
-            var book = await _context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
+            var userId = Request.Headers["UserId"];
+
+            var cacheKey = $"book_{id}_{userId}";
+            var book = _cache.GetData<Book>(cacheKey);
+
+            if (book is null)
+            {
+                book = await _context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
+                _cache.SetData(cacheKey, book);
+            }
             
             if (book == null)
                 return NotFound(new {Message = $"Book with id {id} not found"});
