@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BookStore.Data;
 using Microsoft.EntityFrameworkCore;
+using BookStore.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddStackExchangeRedisCache(option =>
 
 builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddTransient<GlobalErrorHandler>();
 
 builder.Services.AddAuthorization();
 
@@ -50,6 +52,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<GlobalErrorHandler>();
 
 app.MapControllers();
 
