@@ -1,6 +1,5 @@
 global using BookStore.Models;
 global using BookStore.Services;
-using BookStore.Middlewares;
 using BookStore.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +16,6 @@ app.UseHttpsRedirection();
 app.UseCorsConfig();
 
 app.UseAuthorization();
-
-app.UseMiddleware<GlobalErrorHandler>();
 
 app.MapControllers();
 
