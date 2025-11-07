@@ -11,15 +11,7 @@ builder.AddDependencies();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-
-    app.UseSwagger();
-    app.UseSwaggerUI(options => {
-        options.SwaggerEndpoint("/openapi/v1.json", "My API v1");
-    });
-}
+app.UseOpenApiServices();
 
 app.UseHttpsRedirection();
 app.UseCorsConfig();
