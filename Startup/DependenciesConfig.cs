@@ -8,6 +8,7 @@ public static class DependenciesConfig
 {
     public static void AddDependencies(this WebApplicationBuilder builder)
     {
+        builder.Services.AddCorsConfigServices();
         builder.Services.AddControllers();
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

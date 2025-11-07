@@ -4,7 +4,7 @@ public static class CorsConfig
 {
     private const string AllowAllPolicy = "AllowAll";
 
-    public static void AddCorsConfigService(this IServiceCollection services)
+    public static void AddCorsConfigServices(this IServiceCollection services)
     {
         services.AddCors(options =>
         {
@@ -13,5 +13,10 @@ public static class CorsConfig
                 policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
             });
         });
+    }
+
+    public static void UseCorsConfig(this WebApplication app)
+    {
+        app.UseCors(AllowAllPolicy);
     }
 }
