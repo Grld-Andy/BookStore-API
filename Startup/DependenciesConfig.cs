@@ -14,7 +14,6 @@ public static class DependenciesConfig
         builder.Services.AddOpenApiServices();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
         builder.Services.AddDbContext<BookStoreContext>(options =>
