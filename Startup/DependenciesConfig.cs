@@ -12,7 +12,7 @@ public static class DependenciesConfig
         builder.Services.AddControllers();
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        builder.Services.AddOpenApiServices();
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
