@@ -19,7 +19,7 @@ public static class OpenApiConfig
             {
                 options.Title = "BookStore API";
                 options.Theme = ScalarTheme.Saturn;
-                options.Layout = ScalarLayout.Classic;
+                options.Layout = ScalarLayout.Modern;
             });
         }
     }

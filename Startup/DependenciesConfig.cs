@@ -1,5 +1,4 @@
 using BookStore.Data;
-using BookStore.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Startup;
@@ -29,7 +28,6 @@ public static class DependenciesConfig
 
         builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
         builder.Services.AddScoped<IBookService, BookService>();
-        builder.Services.AddTransient<GlobalErrorHandler>();
 
         builder.Services.AddAuthorization();
     }
