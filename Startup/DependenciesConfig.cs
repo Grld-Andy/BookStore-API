@@ -27,6 +27,7 @@ public static class DependenciesConfig
 
         builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
         builder.Services.AddScoped<IBookService, BookService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         builder.Services.AddAuthorization();
     }

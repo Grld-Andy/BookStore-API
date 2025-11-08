@@ -10,59 +10,30 @@ namespace BookStore.Namespace;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController(IConfiguration configuration) : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
     public static User user = new();
 
     [HttpPost("register")]
-    public ActionResult<User> Register(UserDto userDto)
+    public async Task<ActionResult<User>> Register(UserDto userDto)
     {
-        var hashedPassword = new PasswordHasher<User>()
-            .HashPassword(user, userDto.Password);
-
-        user.Username = userDto.Username;
-        user.PasswordHash = hashedPassword;
+        var user = await authService.RegisterAsync(userDto);
+        if(user is null)
+        {
+            return BadRequest("Username already exists");
+        }
 
         return Ok(user);
     }
 
     [HttpPost("login")]
-    public ActionResult<string> Login(UserDto userDto)
+    public async Task<ActionResult<string>> Login(UserDto userDto)
     {
-        if (user.Username == userDto.Username)
+        var token = await authService.LoginAsync(userDto);
+        if(token is null)
         {
-            return BadRequest("User not found");
+            return BadRequest("Username or password is wrong");
         }
-
-        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, userDto.Password) == PasswordVerificationResult.Failed)
-        {
-            return BadRequest("Wrong password");
-        }
-
-        string token = "success";
         return Ok(token);
-    }
-
-    private string CreateToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Name, user.Username)
-        };
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!)
-        );
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-        var tokenDescriptor = new JwtSecurityToken(
-            issuer: configuration.GetValue<string>("AppSettings:Issuer"),
-            audience: configuration.GetValue<string>("AppSettings:Audience"),
-            claims: claims,
-            expires: DateTime.UtcNow.AddDays(1),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
     }
 }
