@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,5 +36,19 @@ public class AuthController(IAuthService authService) : ControllerBase
             return BadRequest("Username or password is wrong");
         }
         return Ok(token);
+    }
+
+    [Authorize]
+    [HttpGet()]
+    public IActionResult AuthenticatedOnlyEndpoint()
+    {
+        return Ok("You are authenticated");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin-only")]
+    public IActionResult AdminOnlyEndpoint()
+    {
+        return Ok("You are authenticated");
     }
 }

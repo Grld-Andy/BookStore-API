@@ -1,5 +1,8 @@
+using System.Text;
 using BookStore.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookStore.Startup;
 
@@ -12,6 +15,22 @@ public static class DependenciesConfig
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApiServices();
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["AppSettings:Audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)
+                    ),
+                    ValidateIssuerSigningKey = true
+                };
+            });
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddAutoMapper(typeof(Program).Assembly);

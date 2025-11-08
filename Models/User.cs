@@ -17,4 +17,7 @@ public class User
     [Column("passwordHash")]
     [Required]
     public string PasswordHash { get; set; } = string.Empty;
+
+    [Column("role")]
+    public string Role { get; set; } = string.Empty;
 }
