@@ -32,15 +32,27 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<ActionResult<TokenResponseDto>> Login(UserDto userDto)
     {
         var result = await authService.LoginAsync(userDto);
-        if(result is null)
+        if (result is null)
         {
             return BadRequest("Username or password is wrong");
         }
         return Ok(result);
     }
 
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+    {
+        var result = await authService.RefreshTokenAsync(request);
+        if (result is null || result.AccessToken is null || result.RefreshToken is null)
+        {
+            return Unauthorized("Invalid refresh token");
+        }
+
+        return Ok(result);
+    }
+
     [Authorize]
-    [HttpGet()]
+    [HttpGet]
     public IActionResult AuthenticatedOnlyEndpoint()
     {
         return Ok("You are authenticated");
