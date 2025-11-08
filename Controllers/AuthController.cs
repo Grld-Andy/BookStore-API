@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BookStore.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -28,14 +29,14 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(UserDto userDto)
+    public async Task<ActionResult<TokenResponseDto>> Login(UserDto userDto)
     {
-        var token = await authService.LoginAsync(userDto);
-        if(token is null)
+        var result = await authService.LoginAsync(userDto);
+        if(result is null)
         {
             return BadRequest("Username or password is wrong");
         }
-        return Ok(token);
+        return Ok(result);
     }
 
     [Authorize]

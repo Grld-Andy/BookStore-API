@@ -1,7 +1,9 @@
+using BookStore.DTOs;
+
 namespace BookStore.Services;
 
 public interface IAuthService
 {
     Task<User?> RegisterAsync(UserDto userDto);
-    Task<string?> LoginAsync(UserDto userDto);
+    Task<TokenResponseDto?> LoginAsync(UserDto userDto);
 }

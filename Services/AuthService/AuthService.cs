@@ -1,8 +1,10 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using BookStore.Data;
+using BookStore.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,7 +13,7 @@ namespace BookStore.Services;
 
 public class AuthService(BookStoreContext context, IConfiguration configuration) : IAuthService
 {
-    public async Task<string?> LoginAsync(UserDto userDto)
+    public async Task<TokenResponseDto?> LoginAsync(UserDto userDto)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == userDto.Username.ToLower());
 
@@ -24,8 +26,12 @@ public class AuthService(BookStoreContext context, IConfiguration configuration)
             return null;
         }
 
-        string token = CreateToken(user);
-        return token;
+        var response = new TokenResponseDto
+        {
+            AccessToken = CreateToken(user),
+            RefreshToken = await GenerateAndSaveRefreshTokenAsync(user)
+        };
+        return response;
     }
 
     public async Task<User?> RegisterAsync(UserDto userDto)
@@ -48,7 +54,7 @@ public class AuthService(BookStoreContext context, IConfiguration configuration)
 
         return user;
     }
-    
+
     private string CreateToken(User user)
     {
         var claims = new List<Claim>
@@ -73,4 +79,22 @@ public class AuthService(BookStoreContext context, IConfiguration configuration)
 
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
     }
+
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
+    }
+
+    private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
+    {
+        var refreshToken = GenerateRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await context.SaveChangesAsync();
+        return refreshToken;
+    }
+
 }
